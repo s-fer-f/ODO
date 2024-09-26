@@ -58,7 +58,7 @@ end
 
 h1 = zeros(1,length(Delta_var));
 f_ODO_TWDP = figure;
-set(f_ODO_TWDP, 'Position',  [1100, 360, 560, 420])
+set(f_ODO_TWDP, 'Position',  [520, 360, 560, 420])
 set(f_ODO_TWDP, 'defaultAxesTickLabelInterpreter','latex','defaultAxesFontSize',12);
 set(f_ODO_TWDP, 'defaultLegendInterpreter','latex');
 set(f_ODO_TWDP, 'defaultTextInterpreter','latex','defaultTextFontSize',14);
@@ -78,6 +78,31 @@ ylabel('$\delta_{\rm TWDP}$');
 legend(legendInfo_dVar)
 hold off;
 
+
+c_theo = 10./delta_theo_dVar;
+c_num = 10./delta_num_dVar;
+
+f_c = figure;
+set(f_c, 'Position',  [1100, 360, 560, 420])
+set(f_c, 'defaultAxesTickLabelInterpreter','latex','defaultAxesFontSize',12);
+set(f_c, 'defaultLegendInterpreter','latex');
+set(f_c, 'defaultTextInterpreter','latex','defaultTextFontSize',14);
+set(f_c, 'defaultLineLineWidth',1);
+set(f_c, 'color','w');
+hold on
+for d = 1:length(Delta_var)
+    h1(d) = plot(Omega_dB, c_theo(d,:));
+end
+for d = 1:length(Delta_var)
+    plot(Omega_dB(2:end), c_num(d,:), 's--','Color',get(h1(d), 'color'),'MarkerIndices', 2*d:markers_ind:length(Omega_dB)-1)    
+end
+yline(10,':k','LineWidth',2);
+grid on
+xlabel('$\Omega_0$ (dB)');
+ylabel('$c_{\rm TWDP}$ (dB)');
+legend(legendInfo_dVar)
+hold off;
+axis([0 Omega_dB(end) 2 20])
 
 
 disp('Solid line --> Theoretical derivative - Dashed line with markers --> Numerical derivative')
