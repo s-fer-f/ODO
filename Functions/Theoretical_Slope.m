@@ -15,7 +15,8 @@ function [m,a] = Theoretical_Slope(Omega0, PR, distribution, parameters)
 % Rayleigh --> Rayleigh
 % Rice --> Rice
 % Cascaded --> Cascaded Rayleigh
-% Two-Wave with Diffuse Power (TWDP)
+% TWDP --> Two-Wave with Diffuse Power
+% RiceSC --> Rice (selection combining)
 % -------------------------------------
 
 if strcmp(distribution, 'Rayleigh')
@@ -41,6 +42,18 @@ elseif strcmp(distribution, 'TWDP')
     end
     a = cdfSNRTWDPTh(parameters, 1, PR./Omega0);
     m = (PR./Omega0).*pdfSNRTWDPTh(PR./Omega0, parameters, 1)./a;
+elseif strcmp(distribution, 'RiceSC')
+    if nargin < 4
+        disp('Parameters K and N are necessary for Rice SC distribution')
+        else
+        if length(parameters) < 2
+            disp('Parameter K and N are necessary for Rice SC distribution')
+        end    
+    end
+    K = parameters(1);
+    N = parameters(2);
+    a = cdfSNRRiceTh(PR./Omega0, K, 1).^N;
+    m = (PR./Omega0).*pdfSNRRiceThSC(PR./Omega0,K,1,N)./a;    
 else
     disp('Unsupported distribution')
     return
