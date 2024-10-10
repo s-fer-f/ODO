@@ -59,8 +59,12 @@ end
 oPasym = acdfSNRRiceTh(W_th./Omega, K, 1);
 legendInfo{end+1} = '$\Omega_0$ $\rightarrow$ $\infty$';
 
+
+
+
+
 f_OP_Rice = figure;
-set(f_OP_Rice, 'Position',  [1160 360, 560, 420])
+set(f_OP_Rice, 'Position',  [1260 360, 560, 420])
 set(f_OP_Rice, 'defaultAxesTickLabelInterpreter','latex','defaultAxesFontSize',12);
 set(f_OP_Rice, 'defaultLegendInterpreter','latex');
 set(f_OP_Rice, 'defaultTextInterpreter','latex','defaultTextFontSize',14);
@@ -68,7 +72,7 @@ set(f_OP_Rice, 'defaultLineLineWidth',1);
 set(f_OP_Rice, 'color','w');
 semilogy(Omega_dB, oPtheo, 'b', 'LineWidth',2)
 hold on
-semilogy(Omega_dB, oP, 'o','MarkerFaceColor', 'g', 'MarkerEdgeColor', 'c', 'MarkerIndices',1:markers_ind:length(Omega_dB))
+semilogy(Omega_dB, oP, 'o','MarkerFaceColor', 'g', 'MarkerEdgeColor', 'b', 'MarkerIndices',1:markers_ind:length(Omega_dB))
 semilogy(Omega_dB,linearAppox_log_Theo_var,'--','LineWidth', 2)
 semilogy(Omega_dB, oPasym,':k', 'LineWidth',2)
 plot(Omega0dB_var, oPtheo_Om0_var,'xk','LineWidth', 2 ,MarkerSize = 10)
@@ -85,8 +89,8 @@ hold off;
 %% Variation of parameters a and b (intercept and slope)
 K = [0.05 0.5 1 2 5 10 12 15];
 
-Omega_dB = -10:0.1:40;                    % Average SNR (in dB)
-Omega = 10.^(Omega_dB/10);             % Average SNR
+Omega_dB = -10:0.1:40;                                                          % Average SNR (in dB)
+Omega = 10.^(Omega_dB/10);                                                      % Average SNR
  
 % Parameter for Figures
 markers_ind = ceil(length(Omega_dB)/100*4);
@@ -111,19 +115,23 @@ for k = 1:length(K)
     oPtheo(k,:) = cdfSNRRiceTh(W_th./Omega, K(k), 1);
 
     % Numerical and theoretical log10(CDF)'s derivative
-    G(k,:) = log10(oPtheo(k,:));                                                                  % log10 of the CDF
+    G(k,:) = log10(oPtheo(k,:));                                                                        % log10 of the CDF
 
-    Gprime(k,:) = -diff(G(k,:))./diff(Omega_dB);                                                  % Numerical derivative
+    Gprime(k,:) = -diff(G(k,:))./diff(Omega_dB);                                                        % Numerical derivative
     delta_num(k,:) = 10*Gprime(k,:);
 
-    [m_var(k,:), a_var(k,:)] = Theoretical_Slope(Omega, W_th, 'Rice', K(k));                     % Theoretical derivative
+    [m_var(k,:), a_var(k,:)] = Theoretical_Slope(Omega, W_th, 'Rice', K(k));                            % Theoretical derivative
     delta_theo(k,:) = m_var(k,:);
 end
 
+
+
+
 h1 = zeros(1,length(K));
 legendInfo_slope = cell(1, length(K));
+
 f_ODO_Rice = figure;
-set(f_ODO_Rice, 'Position',  [460 360, 560, 420])
+set(f_ODO_Rice, 'Position',  [40 360, 560, 420])
 set(f_ODO_Rice, 'defaultAxesTickLabelInterpreter','latex','defaultAxesFontSize',12);
 set(f_ODO_Rice, 'defaultLegendInterpreter','latex');
 set(f_ODO_Rice, 'defaultTextInterpreter','latex','defaultTextFontSize',14);
@@ -145,4 +153,33 @@ legend(legendInfo_slope,'Location','northeast','AutoUpdate','off');
 grid on
 hold off
 
-disp('Solid line --> Theoretical derivative - Dashed line with markers --> Numerical derivative')
+
+
+
+
+
+h1 = zeros(1,length(K));
+c_theo = 10./delta_theo;
+c_num = 10./delta_num;
+
+f_c = figure;
+set(f_c, 'Position',  [640, 360, 560, 420])
+set(f_c, 'defaultAxesTickLabelInterpreter','latex','defaultAxesFontSize',12);
+set(f_c, 'defaultLegendInterpreter','latex');
+set(f_c, 'defaultTextInterpreter','latex','defaultTextFontSize',14);
+set(f_c, 'defaultLineLineWidth',1.5);
+set(f_c, 'color','w');
+hold on
+for i = 1:length(K)
+    h1(i) = plot(Omega_dB, c_theo(i,:));
+end
+for i = 1:length(K)
+    plot(Omega_dB(2:end), c_num(i,:), 's--','Color',get(h1(i), 'color'),'MarkerIndices', 2*i:markers_ind:length(Omega_dB)-1)    
+end
+yline(10,':k','LineWidth',2);
+grid on
+xlabel('$\Omega_0$ (dB)');
+ylabel('$c_{\rm Rice}$ (dB)');
+legend(legendInfo_slope)
+hold off;
+axis([0 Omega_dB(end) 2 20])
