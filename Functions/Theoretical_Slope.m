@@ -17,21 +17,25 @@ function [m,a] = Theoretical_Slope(Omega0, PR, distribution, parameters)
 % Cascaded --> Cascaded Rayleigh
 % TWDP --> Two-Wave with Diffuse Power
 % RiceSC --> Rice (selection combining)
+% RiceMRC --> Rice (Maximal ratio combining)
 % -------------------------------------
 
 if strcmp(distribution, 'Rayleigh')
     a = cdfSNRRayleighTh(PR./Omega0, 1);
-    m = (PR./Omega0).*pdfSNRRayleighTh(PR./Omega0, 1)./a;
+    pdf = pdfSNRRayleighTh(PR./Omega0, 1);
+    m = (PR./Omega0).*pdf./a;
 elseif strcmp(distribution, 'Cascaded')
     a = cdfSNRProductTh(PR./Omega0, 1);
-    m = (PR./Omega0).*pdfSNRProductTh(PR./Omega0, 1)./a;
+    pdf = pdfSNRProductTh(PR./Omega0, 1);
+    m = (PR./Omega0).*pdf./a;
 elseif strcmp(distribution, 'Rice')
     if nargin < 4
         disp('Parameter K is necessary for Rice distribution')
     end
     K = parameters;
     a = cdfSNRRiceTh(PR./Omega0, K, 1);
-    m = (PR./Omega0).*pdfSNRRiceTh(PR./Omega0, K, 1)./a;
+    pdf = pdfSNRRiceTh(PR./Omega0, K, 1);
+    m = (PR./Omega0).*pdf./a;
 elseif strcmp(distribution, 'TWDP')
     if nargin < 4
         disp('Parameter K and Delta are necessary for TWDP distribution')
@@ -41,19 +45,34 @@ elseif strcmp(distribution, 'TWDP')
         end
     end
     a = cdfSNRTWDPTh(parameters, 1, PR./Omega0);
-    m = (PR./Omega0).*pdfSNRTWDPTh(PR./Omega0, parameters, 1)./a;
+    pdf = pdfSNRTWDPTh(PR./Omega0, parameters, 1);
+    m = (PR./Omega0).*pdf./a;
 elseif strcmp(distribution, 'RiceSC')
     if nargin < 4
         disp('Parameters K and N are necessary for Rice SC distribution')
-        else
+    else
         if length(parameters) < 2
             disp('Parameter K and N are necessary for Rice SC distribution')
-        end    
+        end
     end
     K = parameters(1);
     N = parameters(2);
     a = cdfSNRRiceTh(PR./Omega0, K, 1).^N;
-    m = (PR./Omega0).*pdfSNRRiceThSC(PR./Omega0,K,1,N)./a;    
+    pdf = pdfSNRRiceThSC(PR./Omega0,K,1,N);
+    m = (PR./Omega0).*pdf./a;
+elseif strcmp(distribution, 'RiceMRC')
+    if nargin < 4
+        disp('Parameters K and N are necessary for Rice MRC distribution')
+    else
+        if length(parameters) < 2
+            disp('Parameter K and N are necessary for Rice MRC distribution')
+        end
+    end
+    K = parameters(1);
+    N = parameters(2);
+    a = cdfSNRRiceThMRC(PR./Omega0, K, 1,N);
+    pdf = pdfSNRRiceThMRC(PR./Omega0, K, 1,N);
+    m = (PR./Omega0).*pdf./a;
 else
     disp('Unsupported distribution')
     return
